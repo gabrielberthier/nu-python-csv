@@ -1,32 +1,17 @@
 import pandas as pd
 import asyncio
-from aiofiles import os, open
-from pathlib import Path
-from os.path import basename
-from io import StringIO
-from csv_pipeline import transform
 import time
+from pathlib import Path
+from io import StringIO
+from .csv_pipeline import transform
+from .async_filesystem import create_dirs_if_not_exist, read_async_file
+from .spent_classfication import classify
 
 
 def get_default_files():
     import os
 
     return f"{os.getcwd()}/output", f"{os.getcwd()}/csvs"
-
-
-async def create_dirs_if_not_exist(output_folder: str):
-    outputs = ["", "expenses", "incomes"]
-    for o in outputs:
-        trimmed = f"{output_folder}/{o}".strip()
-        if not (await os.path.exists(trimmed)):
-            await os.makedirs(trimmed)
-            print("Created" + f"{trimmed}")
-
-
-async def read_async_file(file_path):
-    print(f"Parsing file {file_path}")
-    async with open(file_path, mode="r") as f:
-        return (basename(file_path), await f.read())
 
 
 async def save_csv(
@@ -60,7 +45,9 @@ async def read_and_transpose_nu_csv(csv: str, output: str, filename: str):
 
         set_rows = {"Data": "Date", "Valor": "Amount", "Descrição": "Item"}
         nu_data.rename(columns=set_rows, inplace=True)
-        new_dataframe = nu_data.assign(Tags=lambda x: "")
+        new_dataframe = nu_data.assign(Tags=lambda x: "Unknown")
+
+        await classify(new_dataframe)
 
         expenses, incomes = await separate_expenses_and_incomes(new_dataframe)
 

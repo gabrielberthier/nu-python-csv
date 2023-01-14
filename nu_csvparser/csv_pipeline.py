@@ -1,8 +1,8 @@
-from apply_cols import insert_columns
-from map_extract_entries import map_entry_item
+from .apply_cols import insert_columns
+from .map_extract_entries import map_entry_item
 from pandas import DataFrame
 
-from parallel_mapper import parallelize_dataframe
+from .parallel_mapper import parallelize_dataframe
 
 
 def pipeline_income(df: DataFrame):
