@@ -116,7 +116,7 @@ async def main():
 
     time_spent = end - start
 
-    print(f"Total time spent: {time_spent}")
+    print(f"Total time spent: {time_spent}s")
 
 
 if __name__ == "__main__":
