@@ -3,7 +3,7 @@ from pathlib import Path
 import asyncio
 import time
 
-from .async_filesystem import read_async_file
+from .async_filesystem import read_async_file, create_dirs_if_not_exist
 from .csv_parser import read_and_transpose_nu_csv
 
 
@@ -14,6 +14,8 @@ def get_default_files():
 async def parse_csv(where: str = None, output_folder: str = None):
     start = time.time()
     default_output_folder, csvs_path = get_default_files()
+
+    await create_dirs_if_not_exist(output_folder)
 
     where = where or csvs_path
     output_folder = output_folder or default_output_folder
